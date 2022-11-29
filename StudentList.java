@@ -1,95 +1,75 @@
 import java.io.*;
 import java.text.*;
 import java.util.*;
-public class StudentList {
-	public static void main(String[] args) {
 
-//		Check arguments
-		if(args[0].equals("a")) {
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			String i[] = r.split(",");			
-			for(String j : i) { System.out.println(j); }
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");
-		}
-		else if(args[0].equals("r")) 
-		{
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			System.out.println(r);
-			String i[] = r.split(",");	
-			Random x = new Random();
-				int y = x.nextInt();
-					System.out.println(i[y]);
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");			
-		}
-		else if(args[0].contains("+")){
-			System.out.println("Loading data ...");			
-			try {
-			BufferedWriter s = new BufferedWriter(
-					new FileWriter("students.txt", true));
-			String t = args[0].substring(1);
-	        Date d = new Date();
-	        String df = "dd/mm/yyyy-hh:mm:ss a";
-	        DateFormat dateFormat = new SimpleDateFormat(df);
-	        String fd= dateFormat.format(d);
-			s.write(", "+t+"\nList last updated on "+fd);
-			s.close();
-			} catch (Exception e){}
-							
-			System.out.println("Data Loaded.");	
-		}
-		else if(args[0].contains("?")) 
-		{
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			String i[] = r.split(",");	
-			boolean done = false;
-			String t = args[0].substring(1);
-			for(int idx = 0; idx<i.length && !done; idx++) {
-				if(i[idx].equals(t)) {
-					System.out.println("We found it!");
-						done=true;
-				}
-			}
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");				
-		}
-		else if(args[0].contains("c")) 
-		{
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String D = s.readLine();
-			char a[] = D.toCharArray();			
-			boolean in_word = false;
-			int count=0;
-			for(char c:a) {
-				if(c ==' ') 
-				{
-					if (!in_word) {	count++; in_word =true;	}
-					else { in_word=false;}			
-				}
-			}
-			System.out.println(count +" word(s) found " + a.length);
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");				
-		}
-	}
+public class StudentList {
+    public static String students;
+    public static String[] studentsName;
+
+    public static void Read() {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(Constant.fileName)));
+            students = reader.readLine();
+            studentsName = students.split(Constant.coma);
+            reader.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void Write(String Text) {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Constant.fileName, false));
+            bufferedWriter.flush();
+            bufferedWriter.write(Text);
+            bufferedWriter.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        if (args.length == 0) {
+            System.out.println(Constant.error);
+        } else if (args[0].equals(Constant.showAll)) {
+            System.out.println(Constant.loadingInfo);
+            Read();
+            for (String name : studentsName) {
+                System.out.println(name);
+            }
+            System.out.println(Constant.loaded);
+        } else if (args[0].equals(Constant.showRandom)) {
+            System.out.println(Constant.loadingInfo);
+            Read();
+            Random random = new Random();
+            System.out.println(studentsName[random.nextInt(studentsName.length)]);
+            System.out.println(Constant.loaded);
+        } else if (args[0].contains(Constant.addWord)) {
+            System.out.println(Constant.loadingInfo);
+            Read();
+            Date d = new Date();
+            DateFormat dateFormat = new SimpleDateFormat(Constant.DateFormate);
+            String text = students + Constant.coma + args[0].substring(1) + Constant.updateInfo + dateFormat.format(d);
+            Write(text);
+            System.out.println(Constant.loaded);
+        } else if (args[0].contains(Constant.findWord)) {
+            System.out.println(Constant.loadingInfo);
+            Read();
+            for (String name : studentsName) {
+                if (name.equals(args[0].substring(1))) {
+                    System.out.println(Constant.FoundMessage);
+                    break;
+                }
+            }
+            System.out.println(Constant.loaded);
+        } else if (args[0].contains(Constant.countStudent)) {
+            System.out.println(Constant.loadingInfo);
+            System.out.print(studentsName.length);
+            System.out.println(Constant.foundMessage);
+            System.out.println(Constant.loaded);
+        } else {
+            System.out.println(Constant.error);
+        }
+    }
 }
